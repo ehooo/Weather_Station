@@ -28,6 +28,7 @@
 #include "Adafruit_Sensor.h"
 #include "Adafruit_BMP085_U.h"
 #include "WindArduino.h"
+#include "RainArduino.h"
 
 //Fix for Travis
 #ifndef INPUT_PULLUP
