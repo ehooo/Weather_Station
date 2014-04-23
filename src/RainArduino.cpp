@@ -9,6 +9,12 @@
  */
 #include "RainArduino.h"
 
+//Fix for Travis/Inotools
+#ifndef INPUT_PULLUP
+//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
+#define INPUT_PULLUP 0x2
+#endif
+
 RainArduino::RainArduino(){}
 bool RainArduino::begin(void (*callback)(void)) {
 	pinMode(2, INPUT_PULLUP);
