@@ -6,6 +6,5 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip
   - sudo pip install ino
-  - ino build -m mega
-install: true
+install: ino build -m mega
 script: true
