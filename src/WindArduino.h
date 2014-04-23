@@ -21,7 +21,7 @@ class WindArduino {
 	public:
 		WindArduino();
 		//The port are used for manage the interruption made by the sensor use D3 for interrupt
-		bool begin(int wild_speed_port, void (*callback)(void) );
+		bool begin(void (*callback)(void) );
 		//Read the wind direction sensor, return heading in degrees
 		int get_wind_direction(int wild_dir_port);
 		//Returns the instataneous wind speed

@@ -15,9 +15,13 @@
 #define INPUT_PULLUP 0x2
 #endif
 
+#ifndef RAIN_INTERRUPT
+#define RAIN_INTERRUPT 2
+#endif
+
 RainArduino::RainArduino(){}
 bool RainArduino::begin(void (*callback)(void)) {
-	pinMode(2, INPUT_PULLUP);
+	pinMode(RAIN_INTERRUPT, INPUT_PULLUP);
 	attachInterrupt(0, callback, FALLING);
 	return true;
 }

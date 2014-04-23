@@ -9,13 +9,17 @@
  */
 #include "WindArduino.h"
 
+#ifndef WIND_INTERRUPT
+#define WIND_INTERRUPT 3
+#endif
+
 WindArduino::WindArduino(){
 	lastWindCheck = 0;
 	lastWindIRQ = 0;
 	windClicks = 0;
 }
 bool WindArduino::begin(void (*callback)(void)){
-	pinMode(3, INPUT_PULLUP);
+	pinMode(WIND_INTERRUPT, INPUT_PULLUP);
 	attachInterrupt(1, callback, FALLING);
 	return true;
 }
