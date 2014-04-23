@@ -22,6 +22,11 @@
 #include "MPL3115A2.h" //Pressure sensor
 #include "HTU21D.h" //Humidity sensor
 
+//Fix for Travis
+#ifndef INPUT_PULLUP
+#define INPUT_PULLUP 0x2
+#endif
+
 MPL3115A2 myPressure; //Create an instance of the pressure sensor
 HTU21D myHumidity; //Create an instance of the humidity sensor
 
