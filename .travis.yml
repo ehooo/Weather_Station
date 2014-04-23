@@ -8,3 +8,4 @@ before_install:
   - sudo pip install ino
   - ino build -m mega
 install: true
+script: true
