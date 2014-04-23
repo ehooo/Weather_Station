@@ -66,7 +66,7 @@ float MPL3115A2::readAltitude()
 	// Read pressure registers
 	Wire.beginTransmission(MPL3115A2_ADDRESS);
 	Wire.write(OUT_P_MSB);  // Address of data to get
-	Wire.endTransmission(false); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
+	Wire.endTransmission(); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
 	if (Wire.requestFrom(MPL3115A2_ADDRESS, 3) != 3) { // Request three bytes
 		return -999;
 	}
@@ -112,7 +112,7 @@ float MPL3115A2::readPressure()
 	// Read pressure registers
 	Wire.beginTransmission(MPL3115A2_ADDRESS);
 	Wire.write(OUT_P_MSB);  // Address of data to get
-	Wire.endTransmission(false); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
+	Wire.endTransmission(); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
 	if (Wire.requestFrom(MPL3115A2_ADDRESS, 3) != 3) { // Request three bytes
 		return -999;
 	}
@@ -152,7 +152,7 @@ float MPL3115A2::readTemp()
 	// Read temperature registers
 	Wire.beginTransmission(MPL3115A2_ADDRESS);
 	Wire.write(OUT_T_MSB);  // Address of data to get
-	Wire.endTransmission(false); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
+	Wire.endTransmission(); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
 	if (Wire.requestFrom(MPL3115A2_ADDRESS, 2) != 2) { // Request two bytes
 		return -999;
 	}
@@ -273,7 +273,7 @@ byte MPL3115A2::IIC_Read(byte regAddr)
   // This function reads one byte over IIC
   Wire.beginTransmission(MPL3115A2_ADDRESS);
   Wire.write(regAddr);  // Address of CTRL_REG1
-  Wire.endTransmission(false); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
+  Wire.endTransmission(); // Send data to I2C dev with option for a repeated start. THIS IS NECESSARY and not supported before Arduino V1.0.1!
   Wire.requestFrom(MPL3115A2_ADDRESS, 1); // Request the data...
   return Wire.read();
 }
@@ -284,6 +284,6 @@ void MPL3115A2::IIC_Write(byte regAddr, byte value)
   Wire.beginTransmission(MPL3115A2_ADDRESS);
   Wire.write(regAddr);
   Wire.write(value);
-  Wire.endTransmission(true);
+  Wire.endTransmission();
 }
 
