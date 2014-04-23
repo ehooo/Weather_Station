@@ -3,7 +3,7 @@ compiler: gcc
 before_install:
   - gcc --version
   - sudo apt-get update -qq
-  - sudo apt-get install arduino arduino-core arduino-mk python-pip
+  - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip
   - pip install ino
   - ino build --help
 install:
