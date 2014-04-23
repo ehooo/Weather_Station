@@ -9,6 +9,12 @@
  */
 #include "WindArduino.h"
 
+//Fix for Travis/Inotools
+#ifndef INPUT_PULLUP
+//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
+#define INPUT_PULLUP 0x2
+#endif
+
 #ifndef WIND_INTERRUPT
 #define WIND_INTERRUPT 3
 #endif
