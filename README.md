@@ -1,4 +1,4 @@
--Weather_Station
-================
+Weather_Station
+===============
 
-Weather Station bassed on Weather_Shield
+Weather Station bassed on [Weather_Shield](https://github.com/sparkfun/Weather_Shield)
