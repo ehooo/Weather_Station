@@ -22,8 +22,9 @@
 #include "MPL3115A2.h" //Pressure sensor
 #include "HTU21D.h" //Humidity sensor
 
-//Fix for Travis
+//Fix for Travis 
 #ifndef INPUT_PULLUP
+//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
 #define INPUT_PULLUP 0x2
 #endif
 
