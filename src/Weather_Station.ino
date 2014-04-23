@@ -36,8 +36,8 @@
 #define INPUT_PULLUP 0x2
 #endif
 
-MPL3115A2 myPressure; //Create an instance of the pressure sensor
-HTU21D myHumidity; //Create an instance of the humidity sensor
+MPL3115A2 mpl; //Create an instance of the pressure sensor
+HTU21D htu; //Create an instance of the humidity sensor
 
 static uint8_t mac[] = { 0x02, 0xAA, 0xBB, 0xCC, 0x00, 0x22 };
 static uint8_t ip[] = { 192, 168, 0, 51 };
@@ -99,18 +99,17 @@ void defaultCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
 
 void setup() {
   Serial.begin(9600);
-  while(!Serial){;}
 
-  Serial.println("Iniciando DHT!!");
+  Serial.println("Init DHT!!");
   dht.setup(DHT_SENSOR_PIN);
 
-  Serial.println("Iniciando BMP085!!");
+  Serial.println("Init BMP085!!");
   if(!bmp.begin()){
     Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
     bmp_on = false;
   }
 
-  Serial.println("Iniciando Red!!");
+  Serial.println("Init Network!!");
   if( Ethernet.begin(mac) == 0){
     Serial.println("DHCP Error!!");
     Ethernet.begin(mac, ip);
@@ -118,22 +117,26 @@ void setup() {
   Serial.print("Server at ");
   Serial.println(Ethernet.localIP());
 
+  Serial.println("Init Wind Sensor!!");
   wind.begin(wspeedIRQ);
+  Serial.println("Init Rain Sensor!!");
   rain.begin(rainIRQ);
   interrupts();
 
   //Configure the pressure sensor
-  myPressure.begin(); // Get sensor online
-  myPressure.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
-  myPressure.setOversampleRate(7); // Set Oversample to the recommended 128
-  myPressure.enableEventFlags(); // Enable all three pressure and temp event flags 
+  Serial.println("Init MPL3115A2!!");
+  mpl.begin(); // Get sensor online
+  mpl.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
+  mpl.setOversampleRate(7); // Set Oversample to the recommended 128
+  mpl.enableEventFlags(); // Enable all three pressure and temp event flags 
 
   //Configure the humidity sensor
-  myHumidity.begin();
+  Serial.println("Init HTU21D!!");
+  htu.begin();
 
+  Serial.println("Init Webserver!!");
   webserver.setDefaultCommand(&defaultCmd);
   //webserver.addCommand("stats.json", &statsCmd);
-
   webserver.begin();
 }
 

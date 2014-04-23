@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/ehooo/Weather_Station.svg?branch=master)](https://travis-ci.org/ehooo/Weather_Station)
 
-Weather_Station
+
+Weather_Station [![Build Status](https://travis-ci.org/ehooo/Weather_Station.svg?branch=master)](https://travis-ci.org/ehooo/Weather_Station)
 ===============
 Weather Station bassed on [Weather_Shield](https://github.com/sparkfun/Weather_Shield)
 
