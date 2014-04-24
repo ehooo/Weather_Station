@@ -13,8 +13,8 @@ before_install:
   - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip
   - sudo pip install ino
 install:
-	- ino build -m mega
-	- ls .build -al
+  - ino build -m mega
+  - ls .build -al
 script: true
 
 addons:
