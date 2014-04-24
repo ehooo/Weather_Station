@@ -14,15 +14,16 @@ before_install:
   - sudo pip install ino
 install:
   - ino build -m mega
-  - ls .build -al
-script: true
+#before_script: true
+script: make -f .build/mega/Makefile
+#after_script: true
 
 addons:
   coverity_scan:
     project:
       name: "ehooo/Weather_Station"
-      description: "Wheter station"
+      description: "Wheater station"
     build_command_prepend:
     #make are call by ino in background
-    build_command: make
+    build_command: make -f .build/mega/Makefile
     branch_pattern: coverity_scan
