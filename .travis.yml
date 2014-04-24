@@ -1,3 +1,9 @@
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "TBH1lv8uRb/QkZl1FHCQbx5WE/xPdbSvqGaVXB6WAplklfUGjamgCy9MkpUhrj6pB+AtFjGtksCS87uv8Q4sYQaZbn6pmGX1EVy4kTejfpJf3uvL7qtjb7FQkvIjnQMuoPKYR3Rh5rDx/rI7L86sUm2eehbCtcoHpIHGwaI9w/4="
+
 language: cpp
 compiler: gcc
 python:
@@ -6,5 +12,17 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip
   - sudo pip install ino
-install: ino build -m mega
+install:
+	- ino build -m mega
+	- ls .build -al
 script: true
+
+addons:
+  coverity_scan:
+    project:
+      name: "ehooo/Weather_Station"
+      description: "Wheter station"
+    build_command_prepend:
+    #make are call by ino in background
+    build_command: make
+    branch_pattern: coverity_scan
