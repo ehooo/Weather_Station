@@ -25,5 +25,5 @@ addons:
       description: "Wheater station"
     build_command_prepend:
     #make are call by ino in background
-    build_command: make -f .build/mega/Makefile
+    build_command: "make -f .build/mega/Makefile"
     branch_pattern: coverity_scan
