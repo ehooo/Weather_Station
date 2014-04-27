@@ -101,7 +101,7 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
   server.httpSuccess("application/json");
   server.write("{");
   if (type == WebServer::HEAD) return;
-  if (rain) {
+  if (true) {//rain) {
     server.write("\"rain\":{ \"total\":  ");
     dato = rain.get_rain();
     dtostrf(dato, 5, 2, buff);
@@ -112,7 +112,7 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
     server.write(buff);
     server.write(" },");
   }
-  if (wind) {
+  if (true) {//wind) {
     server.write("\"wind\":{ \"direction\":  ");
     dato = wind.get_wind_direction(WDIR_PIN);
     dtostrf(dato, 5, 2, buff);
@@ -143,7 +143,7 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
       server.write(" },");
     }
   }
-  if (dht) {
+  if (true) {//dht) {
     server.write("\"dht\":{ \"status\": \"");
     server.write(dht.getStatusString());
     server.write("\", \"humidity\": ");
@@ -156,7 +156,7 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
     server.write(buff);
     server.write("},");
   }
-  if (mpl) {
+  if (true) {//mpl) {
       server.write("\"mpl\":{ \"pressure\":  ");
       dato = mpl.readPressure();
       dtostrf(dato, 5, 2, buff);
@@ -171,7 +171,7 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
       server.write(buff);
       server.write(" },");
   }
-  if (htu) {
+  if (true) {//htu) {
     server.write("\"htu\":{ \"humidity\": ");
     dato = htu.readHumidity();
     dtostrf(dato, 5, 2, buff);
