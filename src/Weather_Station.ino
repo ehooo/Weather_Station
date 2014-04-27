@@ -15,8 +15,14 @@
  calcualted at each report.
  
  This example code assumes the GPS module is not used.
- 
  */
+
+//Fix for Travis/Inotools
+#ifndef INPUT_PULLUP
+//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
+#define INPUT_PULLUP 0x2
+#endif
+//Endfix for Travis/Inotools */
 
 #include <SPI.h>
 #include <Wire.h> //I2C needed for sensors
@@ -30,12 +36,6 @@
 #include "WindArduino.h"
 #include "RainArduino.h"
 
-//Fix for Travis
-#ifndef INPUT_PULLUP
-//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
-#define INPUT_PULLUP 0x2
-#endif
-
 MPL3115A2 mpl; //Create an instance of the pressure sensor
 HTU21D htu; //Create an instance of the humidity sensor
 
@@ -44,18 +44,18 @@ static uint8_t ip[] = { 192, 168, 0, 51 };
 
 #define DHT_SENSOR_PIN 12
 WebServer webserver("",80);
-DHT dht;
+DHT dht; //Create an instance of external the humidity sensor
 
 boolean bmp_on=true;
-Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
+Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085); //Create an instance of the pressure sensor
 
-float dato;
-char buff[8];
+float dato; //Create auxiliar data
+char buff[8]; //Create auxiliar data
 
 #define WDIR_PIN A0
-WindArduino wind;
+WindArduino wind; //Create an instance of wind sensor
 void wspeedIRQ(){ wind.wspeedIRQ(); }
-RainArduino rain;
+RainArduino rain; //Create an instance of rain sensor
 void rainIRQ(){ rain.rainIRQ(); }
 
 void defaultCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
@@ -94,6 +94,95 @@ void defaultCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
   "</body>"
   "</html>";
   server.printP(message);
+}
+
+void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
+  Serial.println("BMP json");
+  server.httpSuccess("application/json");
+  server.write("{");
+  if (type == WebServer::HEAD) return;
+  if (rain) {
+    server.write("\"rain\":{ \"total\":  ");
+    dato = rain.get_rain();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(", \"last\": ");
+    dato = rain.get_rain_last();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(" },");
+  }
+  if (wind) {
+    server.write("\"wind\":{ \"direction\":  ");
+    dato = wind.get_wind_direction(WDIR_PIN);
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(", \"speed\": ");
+    dato = wind.get_wind_speed();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(" },");
+  }
+
+  if(bmp_on){
+    sensors_event_t event;
+    bmp.getEvent(&event);
+    if (event.pressure) {
+      server.write("\"bmp\":{ \"pressure\":  ");
+      dtostrf(event.pressure, 5, 2, buff);
+      server.write(buff);
+      server.write(", \"temperature\": ");
+      bmp.getTemperature(&dato);
+      dtostrf(dato, 5, 2, buff);
+      server.write(buff);
+      server.write(", \"altitude\": ");
+      dato = bmp.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA, event.pressure, dato);
+      bmp.getTemperature(&dato);
+      dtostrf(dato, 5, 2, buff);
+      server.write(buff);
+      server.write(" },");
+    }
+  }
+  if (dht) {
+    server.write("\"dht\":{ \"status\": \"");
+    server.write(dht.getStatusString());
+    server.write("\", \"humidity\": ");
+    dato = dht.getHumidity();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(", \"temperature\": ");
+    dato = dht.getTemperature();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write("},");
+  }
+  if (mpl) {
+      server.write("\"mpl\":{ \"pressure\":  ");
+      dato = mpl.readPressure();
+      dtostrf(dato, 5, 2, buff);
+      server.write(buff);
+      server.write(", \"temperature\": ");
+      dato = mpl.readTemp();
+      dtostrf(dato, 5, 2, buff);
+      server.write(buff);
+      server.write(", \"altitude\": ");
+      dato = mpl.readAltitude();
+      dtostrf(dato, 5, 2, buff);
+      server.write(buff);
+      server.write(" },");
+  }
+  if (htu) {
+    server.write("\"htu\":{ \"humidity\": ");
+    dato = htu.readHumidity();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write(", \"temperature\": ");
+    dato = htu.readTemperature();
+    dtostrf(dato, 5, 2, buff);
+    server.write(buff);
+    server.write("},");
+  }
+  server.write(" }");
 }
 
 
@@ -136,7 +225,7 @@ void setup() {
 
   Serial.println("Init Webserver!!");
   webserver.setDefaultCommand(&defaultCmd);
-  //webserver.addCommand("stats.json", &statsCmd);
+  webserver.addCommand("stats.json", &statsCmd);
   webserver.begin();
 }
 

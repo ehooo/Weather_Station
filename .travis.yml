@@ -10,13 +10,13 @@ python:
   - "2.7"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip
+  - sudo apt-get install -qq arduino arduino-core arduino-mk python-setuptools python-pip clang
   - sudo pip install ino
-install:
-  - ino build -m mega
+install: ino build -m mega
 #before_script: true
 script: make -f .build/mega/Makefile
-#after_script: true
+#Clang scanner
+after_script: scan-build -k -o ./ make -f .build/mega/Makefile
 
 addons:
   coverity_scan:
@@ -24,6 +24,5 @@ addons:
       name: "ehooo/Weather_Station"
       description: "Wheater station"
     build_command_prepend:
-    #make are call by ino in background
-    build_command: "make"
+    build_command: make
     branch_pattern: coverity_scan

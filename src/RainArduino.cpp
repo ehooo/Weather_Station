@@ -1,5 +1,5 @@
 /* 
- Wind Lib for Arduino
+ Rain Lib for Arduino
  By: Victor Torre
 
  Based on: Weather Shield Example
@@ -8,12 +8,6 @@
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
  */
 #include "RainArduino.h"
-
-//Fix for Travis/Inotools
-#ifndef INPUT_PULLUP
-//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
-#define INPUT_PULLUP 0x2
-#endif
 
 #ifndef RAIN_INTERRUPT
 #define RAIN_INTERRUPT 2
