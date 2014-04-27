@@ -13,6 +13,13 @@
 #define RAIN_INTERRUPT 2
 #endif
 
+//Fix for Travis/Inotools
+#ifndef INPUT_PULLUP
+//Valor en https://github.com/arduino/Arduino/blob/master/hardware/arduino/cores/arduino/Arduino.h
+#define INPUT_PULLUP 0x2
+#endif
+//Endfix for Travis/Inotools */
+ 
 RainArduino::RainArduino(){}
 bool RainArduino::begin(void (*callback)(void)) {
 	pinMode(RAIN_INTERRUPT, INPUT_PULLUP);
