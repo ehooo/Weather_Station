@@ -23,6 +23,8 @@
 #define INPUT_PULLUP 0x2
 #endif
 //Endfix for Travis/Inotools */
+//#define WEBDUINO_SERIAL_DEBUGGING 1
+//#define WEATHER_SERIAL_DEBUGGING 1
 
 #include <SPI.h>
 #include <Wire.h> //I2C needed for sensors
@@ -37,6 +39,7 @@
 #include "RainArduino.h"
 
 MPL3115A2 mpl; //Create an instance of the pressure sensor
+boolean mpl_on=true;
 HTU21D htu; //Create an instance of the humidity sensor
 
 static uint8_t mac[] = { 0x02, 0xAA, 0xBB, 0xCC, 0x00, 0x22 };
@@ -65,7 +68,9 @@ void defaultCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
   }
 
   server.httpSuccess();
-  Serial.println("HTML base");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("HTML base");
+  #endif
   P(message) = 
   "<!DOCTYPE html><html><head>"
     "<title>Meteo Webduino</title>"
@@ -97,18 +102,28 @@ void defaultCmd(WebServer &server, WebServer::ConnectionType type, char *, bool)
 }
 
 void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
-  Serial.println("BMP json");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Sensor data");
+  #endif
   server.httpSuccess("application/json");
-  server.write("{");
   if (type == WebServer::HEAD) return;
+  server.write("{");
   if (true) {//rain) {
     server.write("\"rain\":{ \"total\":  ");
     dato = rain.get_rain();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("Rain total: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write(", \"last\": ");
     dato = rain.get_rain_last();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("Rain last: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write(" },");
   }
@@ -117,9 +132,17 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
     dato = wind.get_wind_direction(WDIR_PIN);
     dtostrf(dato, 5, 2, buff);
     server.write(buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("Wind direction: ");
+      Serial.println(buff);
+    #endif
     server.write(", \"speed\": ");
     dato = wind.get_wind_speed();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("Wind speed: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write(" },");
   }
@@ -130,15 +153,27 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
     if (event.pressure) {
       server.write("\"bmp\":{ \"pressure\":  ");
       dtostrf(event.pressure, 5, 2, buff);
+      #ifdef WEATHER_SERIAL_DEBUGGING
+        Serial.print("BMP pressure: ");
+        Serial.println(buff);
+      #endif
       server.write(buff);
       server.write(", \"temperature\": ");
       bmp.getTemperature(&dato);
       dtostrf(dato, 5, 2, buff);
+      #ifdef WEATHER_SERIAL_DEBUGGING
+        Serial.print("BMP temperature: ");
+        Serial.println(buff);
+      #endif
       server.write(buff);
       server.write(", \"altitude\": ");
       dato = bmp.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA, event.pressure, dato);
       bmp.getTemperature(&dato);
       dtostrf(dato, 5, 2, buff);
+      #ifdef WEATHER_SERIAL_DEBUGGING
+        Serial.print("BMP altitude: ");
+        Serial.println(buff);
+      #endif
       server.write(buff);
       server.write(" },");
     }
@@ -149,36 +184,64 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
     server.write("\", \"humidity\": ");
     dato = dht.getHumidity();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("DHT humidity: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write(", \"temperature\": ");
     dato = dht.getTemperature();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("DHT temperature: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write("},");
   }
-  if (true) {//mpl) {
-      server.write("\"mpl\":{ \"pressure\":  ");
-      dato = mpl.readPressure();
-      dtostrf(dato, 5, 2, buff);
-      server.write(buff);
-      server.write(", \"temperature\": ");
-      dato = mpl.readTemp();
-      dtostrf(dato, 5, 2, buff);
-      server.write(buff);
-      server.write(", \"altitude\": ");
-      dato = mpl.readAltitude();
-      dtostrf(dato, 5, 2, buff);
-      server.write(buff);
-      server.write(" },");
+  if (mpl_on) {
+    server.write("\"mpl\":{ \"pressure\":  ");
+    dato = mpl.readPressure();
+    dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("MPL pressure: ");
+      Serial.println(buff);
+    #endif
+    server.write(buff);
+    server.write(", \"temperature\": ");
+    dato = mpl.readTemp();
+    dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("MPL temperature: ");
+      Serial.println(buff);
+    #endif
+    server.write(buff);
+    server.write(", \"altitude\": ");
+    dato = mpl.readAltitude();
+    dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("MPL altitude: ");
+      Serial.println(buff);
+    #endif
+    server.write(buff);
+    server.write(" },");
   }
   if (true) {//htu) {
     server.write("\"htu\":{ \"humidity\": ");
     dato = htu.readHumidity();
     dtostrf(dato, 5, 2, buff);
     server.write(buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("HTU humidity: ");
+      Serial.println(buff);
+    #endif
     server.write(", \"temperature\": ");
     dato = htu.readTemperature();
     dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("HTU temperature: ");
+      Serial.println(buff);
+    #endif
     server.write(buff);
     server.write("},");
   }
@@ -187,18 +250,25 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
 
 
 void setup() {
+
   Serial.begin(9600);
 
-  Serial.println("Init DHT!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init DHT!!");
+  #endif
   dht.setup(DHT_SENSOR_PIN);
 
-  Serial.println("Init BMP085!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init BMP085!!");
+  #endif
   if(!bmp.begin()){
-    Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
+    Serial.println("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
     bmp_on = false;
   }
 
-  Serial.println("Init Network!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init Network!!");
+  #endif
   if( Ethernet.begin(mac) == 0){
     Serial.println("DHCP Error!!");
     Ethernet.begin(mac, ip);
@@ -206,24 +276,57 @@ void setup() {
   Serial.print("Server at ");
   Serial.println(Ethernet.localIP());
 
-  Serial.println("Init Wind Sensor!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init Wind Sensor!!");
+  #endif
   wind.begin(wspeedIRQ);
-  Serial.println("Init Rain Sensor!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init Rain Sensor!!");
+  #endif
   rain.begin(rainIRQ);
   interrupts();
 
   //Configure the pressure sensor
-  Serial.println("Init MPL3115A2!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init MPL3115A2!!");
+  #endif
   mpl.begin(); // Get sensor online
-  mpl.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
-  mpl.setOversampleRate(7); // Set Oversample to the recommended 128
-  mpl.enableEventFlags(); // Enable all three pressure and temp event flags 
+  if(mpl_on){
+    uint8_t id;
+    Wire.beginTransmission((uint8_t)MPL3115A2_ADDRESS);
+    #if ARDUINO >= 100
+      Wire.write((uint8_t)WHO_AM_I);
+    #else
+      Wire.send(WHO_AM_I);
+    #endif
+      Wire.endTransmission();
+      Wire.requestFrom((uint8_t)MPL3115A2_ADDRESS, (byte)1);
+    #if ARDUINO >= 100
+      id = Wire.read();
+    #else
+      id = Wire.receive();
+    #endif
+    Wire.endTransmission();
+    if (id!=0x0D){
+      mpl_on = false;
+      Serial.println("Ooops, no MPL3115A2 detected ... Check your wiring or I2C ADDR!");
+    }
+  }
+  if(mpl_on){
+    mpl.setModeBarometer(); // Measure pressure in Pascals from 20 to 110 kPa
+    mpl.setOversampleRate(7); // Set Oversample to the recommended 128
+    mpl.enableEventFlags(); // Enable all three pressure and temp event flags 
+  }
 
   //Configure the humidity sensor
-  Serial.println("Init HTU21D!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init HTU21D!!");
+  #endif
   htu.begin();
 
-  Serial.println("Init Webserver!!");
+  #ifdef WEATHER_SERIAL_DEBUGGING
+    Serial.println("Init Webserver!!");
+  #endif
   webserver.setDefaultCommand(&defaultCmd);
   webserver.addCommand("stats.json", &statsCmd);
   webserver.begin();
