@@ -37,10 +37,15 @@
 #include "Adafruit_BMP085_U.h"
 #include "WindArduino.h"
 #include "RainArduino.h"
+#include "LightSensor.h"
 
 MPL3115A2 mpl; //Create an instance of the pressure sensor
 boolean mpl_on=true;
 HTU21D htu; //Create an instance of the humidity sensor
+
+#define REFERENCE_3V3_PIN A3
+#define LIGHT_PIN A1
+LightSensor ligth;
 
 static uint8_t mac[] = { 0x02, 0xAA, 0xBB, 0xCC, 0x00, 0x22 };
 static uint8_t ip[] = { 192, 168, 0, 51 };
@@ -108,6 +113,17 @@ void statsCmd(WebServer &server, WebServer::ConnectionType type, char *, bool){
   server.httpSuccess("application/json");
   if (type == WebServer::HEAD) return;
   server.write("{");
+  if (true) {//ligth) {
+    server.write("\"ligth\": ");
+    dato = ligth.get_level3v3(REFERENCE_3V3_PIN);
+    dtostrf(dato, 5, 2, buff);
+    #ifdef WEATHER_SERIAL_DEBUGGING
+      Serial.print("Ligth value: ");
+      Serial.println(buff);
+    #endif
+    server.write(buff);
+    server.write(" ,");
+  }
   if (true) {//rain) {
     server.write("\"rain\":{ \"total\":  ");
     dato = rain.get_rain();
@@ -265,6 +281,7 @@ void setup() {
     Serial.println("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
     bmp_on = false;
   }
+  ligth.begin(LIGHT_PIN);
 
   #ifdef WEATHER_SERIAL_DEBUGGING
     Serial.println("Init Network!!");
