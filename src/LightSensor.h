@@ -17,6 +17,10 @@
 #include "WProgram.h"
 #endif
 
+#ifndef INPUT_PULLUP
+#define INPUT_PULLUP 0x2
+#endif
+
 class LightSensor {
 	public:
 		LightSensor();
@@ -42,10 +46,10 @@ float LightSensor::get_level(int reference_pin, float value) {
   return lightSensor;
 }
 float LightSensor::get_level3v3(int reference_pin3v3) {
-	return LightSensor::get_level(reference_pin, 3.3);
+	return LightSensor::get_level(reference_pin3v3, 3.3);
 }
 float LightSensor::get_level5v(int reference_pin5v) {
-	return LightSensor::get_level(reference_pin, 5);
+	return LightSensor::get_level(reference_pin5v, 5);
 }
 
 #endif
