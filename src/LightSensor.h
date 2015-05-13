@@ -23,7 +23,6 @@
 
 class LightSensor {
 	public:
-		LightSensor();
 		bool begin(int light_pin);
 		float get_level(int reference_pin, float value);
 		float get_level3v3(int reference_pin3v3);
